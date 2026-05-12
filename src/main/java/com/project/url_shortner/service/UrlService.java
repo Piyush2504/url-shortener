@@ -1,5 +1,6 @@
 package com.project.url_shortner.service;
 
+import com.project.url_shortner.constants.UrlConstants;
 import com.project.url_shortner.entity.Url;
 import com.project.url_shortner.model.UrlMapper;
 import com.project.url_shortner.repository.UrlRepository;
@@ -23,8 +24,8 @@ public class UrlService {
     }
     public UrlMapper generateShortUrl(ShortUrlRequest url) {
         String originalUrl = url.getUrl();
-        if(!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")){
-            originalUrl = "https://" + originalUrl;
+        if(!originalUrl.startsWith(UrlConstants.HTTP_CONSTANT) && !originalUrl.startsWith(UrlConstants.HTTPS_CONSTANT)){
+            originalUrl = UrlConstants.HTTPS_CONSTANT + originalUrl;
         }
         Optional<Url> optionalUrl = urlRepository.findByOriginalUrl(originalUrl);
         if(optionalUrl.isPresent()){
@@ -49,7 +50,7 @@ public class UrlService {
     }
 
     public String getOriginalCode(String shortUrl) {
-        String shortCode = shortUrl.substring(shortUrl.lastIndexOf('/') + 1);
+        String shortCode = shortUrl.substring(shortUrl.lastIndexOf(UrlConstants.FORWARD_SLASH) + 1);
         Optional<Url> originalCode = urlRepository.findByShortUrl(shortCode);
         if(originalCode.isPresent()){
             return originalCode.get().getOriginalUrl();
