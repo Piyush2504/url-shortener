@@ -3,7 +3,7 @@ package com.project.url_shortner.service;
 import com.project.url_shortner.entity.Url;
 import com.project.url_shortner.model.UrlMapper;
 import com.project.url_shortner.repository.UrlRepository;
-import com.project.url_shortner.request_object.ShortUrlRequest;
+import com.project.url_shortner.model.ShortUrlRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

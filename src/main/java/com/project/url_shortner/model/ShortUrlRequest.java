@@ -1,4 +1,4 @@
-package com.project.url_shortner.request_object;
+package com.project.url_shortner.model;
 
 
 import lombok.Data;
