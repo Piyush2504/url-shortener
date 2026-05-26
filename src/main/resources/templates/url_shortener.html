@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html
+	xmlns:th="http://www.thymeleaf.org"
+>
+
+<head>
+<meta charset="UTF-8">
+<title>Url Shortener</title>
+</head>
+<body style="background-color:#7575a3">
+	
+	<form th:action="@{/shorten}" th:object="${url}" role="form" method = "POST">
+		<input type="text" th:field="*{url}"/>
+		<input type="submit"></input>
+	</form>
+</body>
+</html>
