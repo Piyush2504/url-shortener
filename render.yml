@@ -1,0 +1,50 @@
+services:
+  # 1. Managed PostgreSQL
+  - type: pgo
+    name: postgres-db
+    databaseName: ${DB_NAME}
+    user: ${DB_USERNAME}
+    plan: free
+
+  # 2. Managed Redis
+  - type: redis
+    name: redis-cache
+    plan: free
+    ipAllowList: [] # Internal access only
+
+  # 3. Spring Boot URL Shortener (Pulled from Docker Hub)
+  - type: web
+    name: url-shortener-app
+    env: image
+    image: docker.io/piyush200225/url-shortener:1.0.0 # Your pre-built image
+    plan: free
+    envVars:
+      # Inject Postgres Credentials
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: postgres-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: postgres-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: postgres-db
+          property: password
+          
+      # Inject Redis Host and Port separately
+      - key: SPRING_DATA_REDIS_HOST
+        fromService:
+          type: redis
+          name: redis-cache
+          property: host
+      - key: SPRING_DATA_REDIS_PORT
+        fromService:
+          type: redis
+          name: redis-cache
+          property: port
+          
+      # Hardcode static environment variables
+      - key: CACHE_TYPE
+        value: redis
