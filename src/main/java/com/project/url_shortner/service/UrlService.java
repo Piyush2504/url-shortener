@@ -65,7 +65,7 @@ public class UrlService {
 		String cachedUrl = redisTemplate.opsForValue().get(shortCode);
 
 		if (null != redisTemplate.opsForValue().get(shortUrl)) {
-			logger.error("Getting data from cache ");
+			logger.info("Getting data from cache ");
 			return cachedUrl.toString();
 		}
 		Optional<Url> originalCode = urlRepository.findByShortUrl(shortCode);
