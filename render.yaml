@@ -1,8 +1,8 @@
 # 1. Managed PostgreSQL
 databases:
   - name: postgres-db
-    databaseName: ${DB_NAME}
-    user: ${DB_USERNAME}
+    databaseName: url_shortener_db
+    user: url_shortener_user
     plan: free
 
 # 2. Managed Redis & Spring Boot App
@@ -10,16 +10,15 @@ services:
   - type: redis
     name: redis-cache
     plan: free
-    ipAllowList: [] # Internal access only
+    ipAllowList: [] 
 
   - type: web
     name: url-shortener-app
-    env: image
+    runtime: image 
+    plan: free
     image:
       url: docker.io/piyush200225/url-shortener:1.0.0
-    plan: free
     envVars:
-      # Inject Postgres Credentials
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: postgres-db
@@ -33,7 +32,6 @@ services:
           name: postgres-db
           property: password
           
-      # Inject Redis Host and Port separately
       - key: SPRING_DATA_REDIS_HOST
         fromService:
           type: redis
@@ -45,6 +43,5 @@ services:
           name: redis-cache
           property: port
           
-      # Hardcode static environment variables
       - key: CACHE_TYPE
         value: redis
