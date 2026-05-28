@@ -15,7 +15,8 @@ services:
   - type: web
     name: url-shortener-app
     env: image
-    image: docker.io/piyush200225/url-shortener:1.0.0
+    image:
+      imagePath: docker.io/piyush200225/url-shortener:1.0.0
     plan: free
     envVars:
       # Inject Postgres Credentials
