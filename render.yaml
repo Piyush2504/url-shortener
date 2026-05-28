@@ -17,7 +17,7 @@ services:
     runtime: image 
     plan: free
     image:
-      url: docker.io/piyush200225/url-shortener:1.0.0
+      url: docker.io/piyush200225/url-shortener:latest
     envVars:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
