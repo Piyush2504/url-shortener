@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 100px auto;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 25px;
+        }
+
+        #shortUrl {
+            font-size: 16px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+<h1>URL Shortener</h1>
+
+<input
+        type="text"
+        id="originalUrl"
+        placeholder="Paste your URL here"
+/>
+
+<button onclick="shortenUrl()">Shorten URL</button>
+
+<div class="result">
+    <p>
+        Short URL:
+        <a id="shortUrl" href="#" target="_blank"></a>
+    </p>
+</div>
+
+<script>
+
+    async function shortenUrl() {
+
+        const url = document.getElementById("originalUrl").value.trim();
+
+        if (!url) {
+            alert("Please enter a URL");
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                "http://localhost:8080/api/shorten",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        url: url
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to shorten URL");
+            }
+
+            const data = await response.json();
+
+            // Backend response example:
+            // {
+            //   "shortCode": "abc123"
+            // }
+            const shortUrl = `${window.location.origin}/api/${data.shortUrl}`;
+            // const shortUrl =
+            //     `http://localhost:8080/api/${data.shortUrl}`;
+
+            const shortUrlLink = document.getElementById("shortUrl");
+            shortUrlLink.href = shortUrl;
+            shortUrlLink.textContent = shortUrl;
+
+        } catch (error) {
+            console.error(error);
+            alert("Error shortening URL");
+        }
+    }
+
+    // Allow pressing Enter to shorten the URL
+    document.getElementById("originalUrl")
+        .addEventListener("keydown", function (event) {
+
+            if (event.key === "Enter") {
+                shortenUrl();
+            }
+
+        });
+
+</script>
+
+</body>
+</html>

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.project.url_shortner.dto.UrlDto;
 import com.project.url_shortner.model.ShortUrlRequest;
-import com.project.url_shortner.model.UrlMapper;
 import com.project.url_shortner.service.UrlService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,7 +32,7 @@ public class UrlController {
 	}
 
     @PostMapping(path = "/shorten")
-    public ResponseEntity<UrlMapper> shortenUrl(@RequestBody ShortUrlRequest url) {
+    public ResponseEntity<UrlDto> shortenUrl(@RequestBody ShortUrlRequest url) {
         return ResponseEntity.ok().body(urlService.generateShortUrl(url));
     }
 

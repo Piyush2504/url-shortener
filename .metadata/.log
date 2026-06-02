@@ -1,0 +1,13 @@
+!SESSION 2026-06-01 20:53:36.334 -----------------------------------------------
+eclipse.buildId=4.39.0.20260305-0817
+java.version=26.0.1
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=aarch64, WS=cocoa, NL=en_IN
+Framework arguments:  -product org.eclipse.epp.package.java.product -keyring /Users/piyushbhatia/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch aarch64 -product org.eclipse.epp.package.java.product -keyring /Users/piyushbhatia/.eclipse_keyring
+
+!ENTRY ch.qos.logback.classic 1 0 2026-06-01 20:53:37.295
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY ch.qos.logback.classic 1 0 2026-06-01 20:53:46.460
+!MESSAGE Logback config file: /Users/piyushbhatia/Documents/Projects/url-shortener/.metadata/.plugins/org.eclipse.m2e.logback/logback.2.7.101.20251017-1242.xml
