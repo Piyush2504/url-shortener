@@ -75,7 +75,7 @@
         try {
 
             const response = await fetch(
-                "http://localhost:8080/api/shorten",
+                "/api/shorten",
                 {
                     method: "POST",
                     headers: {
@@ -88,32 +88,38 @@
             );
 
             if (!response.ok) {
-                throw new Error("Failed to shorten URL");
+                throw new Error(`HTTP Error: ${response.status}`);
             }
 
             const data = await response.json();
 
-            // Backend response example:
-            // {
-            //   "shortCode": "abc123"
-            // }
-            const shortUrl = `${window.location.origin}/api/${data.shortUrl}`;
-            // const shortUrl =
-            //     `http://localhost:8080/api/${data.shortUrl}`;
+            /*
+             * Expected backend response:
+             * {
+             *   "shortUrl": "abc123"
+             * }
+             */
 
-            const shortUrlLink = document.getElementById("shortUrl");
+            const shortUrl =
+                `${window.location.origin}/${data.shortUrl}`;
+
+            const shortUrlLink =
+                document.getElementById("shortUrl");
+
             shortUrlLink.href = shortUrl;
             shortUrlLink.textContent = shortUrl;
 
         } catch (error) {
-            console.error(error);
+
+            console.error("Error:", error);
             alert("Error shortening URL");
+
         }
     }
 
-    // Allow pressing Enter to shorten the URL
-    document.getElementById("originalUrl")
-        .addEventListener("keydown", function (event) {
+    document
+        .getElementById("originalUrl")
+        .addEventListener("keydown", function(event) {
 
             if (event.key === "Enter") {
                 shortenUrl();

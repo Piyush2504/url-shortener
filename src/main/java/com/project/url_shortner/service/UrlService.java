@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +37,7 @@ public class UrlService {
 		String originalUrl = url.getUrl();
 		if (!originalUrl.startsWith(UrlConstants.HTTP_CONSTANT)
 				&& !originalUrl.startsWith(UrlConstants.HTTPS_CONSTANT)) {
+			logger.info("appending HTTP/HTTPS to the originalUrl");
 			originalUrl = UrlConstants.HTTPS_CONSTANT + originalUrl;
 		}
 		ObjectMapper mapper = new ObjectMapper();
@@ -47,18 +47,12 @@ public class UrlService {
 		cachedResult.setShortUrl(cachedUrlPresent);
 		cachedResult.setCreatedAt(LocalDateTime.now());
 		cachedResult.setExpiresAt(LocalDateTime.now().plusDays(1));
-//		Optional<Url> optionalUrl = urlRepository.findByOriginalUrl(originalUrl);
-//		if (optionalUrl.isPresent()) {
-//			jsonUrl = mapper.writeValueAsString(optionalUrl.get());
-//			return mapper.readValue(jsonUrl, UrlDto.class);
-//		}
-		
 		if(null!=cachedUrlPresent) {
-			logger.info("getting cached data as url was already present in redis");
+			logger.info("cache data found for the original url "+originalUrl);
 			return cachedResult;
 		}
+		logger.info("cache data not found hence looking up to database for the short code");
 		String jsonUrl;
-		logger.info("getting short code from database");
 		String shortCode = generateShortCode(originalUrl);
 		Url urlEntity = new Url();
 		urlEntity.setShortUrl(shortCode);
@@ -66,6 +60,7 @@ public class UrlService {
 		urlEntity.setCreatedAt(LocalDateTime.now());
 		urlEntity.setExpiresAt(LocalDateTime.now().plusDays(1));
 		urlRepository.save(urlEntity);
+		logger.info("maintaining dual-index in cache for both original url and short code");
 		redisTemplate.opsForValue().set(originalUrl, shortCode, Duration.ofDays(1));
 		redisTemplate.opsForValue().set(shortCode, originalUrl, Duration.ofDays(1));
 		jsonUrl = mapper.writeValueAsString(urlEntity);
@@ -73,6 +68,7 @@ public class UrlService {
 	}
 
 	private String generateShortCode(String url) {
+		logger.info("converting the original url to get short code");
 		return Hashing.murmur3_32_fixed().hashString(url, StandardCharsets.UTF_8).toString();
 	}
 
@@ -81,10 +77,10 @@ public class UrlService {
 		String cachedUrl = redisTemplate.opsForValue().get(shortCode).toString();
 
 		if (null != redisTemplate.opsForValue().get(shortUrl)) {
-			logger.info("Getting data from cache ");
+			logger.info("cache data was present in the redis");
 			return cachedUrl;
 		}
-		logger.info("getting original data from database");
+		logger.info("key not found in cache hence looking up to database for the value");
 		Optional<Url> originalCode = urlRepository.findByShortUrl(shortCode);
 		if (originalCode.isPresent()) {
 			return originalCode.get().getOriginalUrl();
