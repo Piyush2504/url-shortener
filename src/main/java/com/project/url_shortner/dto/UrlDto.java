@@ -1,11 +1,11 @@
-package com.project.url_shortner.model;
+package com.project.url_shortner.dto;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class UrlMapper {
+public class UrlDto{
     private String  originalUrl;
     private String shortUrl;
     private LocalDateTime createdAt;
