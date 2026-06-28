@@ -52,17 +52,30 @@ public class UrlService {
 			return cachedResult;
 		}
 		logger.info("cache data not found hence looking up to database for the short code");
+		Optional<Url> shortCodeDB = urlRepository.findByOriginalUrl(url.getUrl());
+		StringBuilder shortCode = new StringBuilder();
+		if(shortCodeDB.isPresent()) {
+			UrlDto dbUrl = new UrlDto();
+			dbUrl.setOriginalUrl(url.getUrl());
+			dbUrl.setShortUrl(shortCodeDB.get().getShortUrl());
+			dbUrl.setCreatedAt(LocalDateTime.now());
+			dbUrl.setExpiresAt(LocalDateTime.now().plusDays(1));
+			shortCode.append(shortCodeDB.get().getShortUrl());
+			redisTemplate.opsForValue().set(originalUrl, shortCode.toString(), Duration.ofDays(1));
+			redisTemplate.opsForValue().set(shortCode.toString(), originalUrl, Duration.ofDays(1));
+			return dbUrl;
+		}
 		String jsonUrl;
-		String shortCode = generateShortCode(originalUrl);
 		Url urlEntity = new Url();
-		urlEntity.setShortUrl(shortCode);
+		shortCode.append(generateShortCode(originalUrl));
+		urlEntity.setShortUrl(shortCode.toString());
 		urlEntity.setOriginalUrl(originalUrl);
 		urlEntity.setCreatedAt(LocalDateTime.now());
 		urlEntity.setExpiresAt(LocalDateTime.now().plusDays(1));
 		urlRepository.save(urlEntity);
 		logger.info("maintaining dual-index in cache for both original url and short code");
-		redisTemplate.opsForValue().set(originalUrl, shortCode, Duration.ofDays(1));
-		redisTemplate.opsForValue().set(shortCode, originalUrl, Duration.ofDays(1));
+		redisTemplate.opsForValue().set(originalUrl, shortCode.toString(), Duration.ofDays(1));
+		redisTemplate.opsForValue().set(shortCode.toString(), originalUrl, Duration.ofDays(1));
 		jsonUrl = mapper.writeValueAsString(urlEntity);
 		return mapper.readValue(jsonUrl, UrlDto.class);
 	}
